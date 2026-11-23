@@ -1,0 +1,12 @@
+[Unit]
+Description=Beelink ME mini CPU and NVMe fan control
+After=systemd-modules-load.service
+
+[Service]
+Type=exec
+ExecStart=@SBINDIR@/beelink-me-mini-fand
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
