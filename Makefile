@@ -8,7 +8,7 @@ build_dir = build
 binary = $(build_dir)/$(program)
 objects = $(addprefix $(build_dir)/,main.o hwmon.o curve.o)
 
-.PHONY: all clean install
+.PHONY: all clean install install-strip
 
 all: $(binary)
 
@@ -21,8 +21,10 @@ $(build_dir)/%.o: src/%.c src/fand.h | $(build_dir)
 $(build_dir):
 	mkdir -p $@
 
-install: $(binary)
-	install -Dm755 $(binary) "$(DESTDIR)$(PREFIX)/sbin/$(program)"
+install-strip: private strip_flag = -s
+
+install install-strip: $(binary)
+	install -Dm755 $(strip_flag) $(binary) "$(DESTDIR)$(PREFIX)/sbin/$(program)"
 	sed 's|@SBINDIR@|$(PREFIX)/sbin|g' systemd/$(program).service.in | \
 		install -Dm644 /dev/stdin "$(DESTDIR)$(SYSTEMD_UNIT_DIR)/$(program).service"
 

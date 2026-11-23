@@ -64,4 +64,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now beelink-me-mini-fand.service
 ```
 
+Use `sudo make install-strip` to strip symbols from the installed executable
+while keeping the build output intact.
+
 To stop the daemon, run `sudo systemctl stop beelink-me-mini-fand.service`.
