@@ -9,10 +9,9 @@ The default CPU fan curve comes from the original
 
 ## Fan curve
 
-| Mode / PWM | CPU package threshold | NVMe composite threshold |
+| PWM | CPU package threshold | NVMe composite threshold |
 | --- | ---: | ---: |
-| Automatic | Below 45 °C | Below 45 °C |
-| 110 | 45 °C | 45 °C |
+| 110 | Below 50 °C | Below 50 °C |
 | 145 | 50 °C | 50 °C |
 | 180 | 55 °C | 55 °C |
 | 215 | 60 °C | 60 °C |
@@ -21,7 +20,8 @@ The default CPU fan curve comes from the original
 
 The daemon samples temperatures every 5 seconds. It increases PWM as soon as a
 sample reaches a higher threshold and applies 3 °C of hysteresis when reducing
-PWM. Automatic mode maps to `pwm2_enable=2` on the IT8613E.
+PWM. The fan stays under manual control while the daemon is running,
+with a minimum PWM of 110.
 
 At each sample, the daemon rescans for NVMe controllers and reads each controller
 once, regardless of how many namespaces it exposes. If a drive reports a warning

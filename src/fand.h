@@ -4,7 +4,6 @@
 #include <stdbool.h>
 
 enum fan_level {
-    FAN_AUTO,
     FAN_LOW,
     FAN_MEDIUM_LOW,
     FAN_MEDIUM,

@@ -10,9 +10,9 @@ enum {
 static struct fan_demand curve_demand(int temperature, const int *thresholds,
                                       int shift)
 {
-    struct fan_demand demand = {FAN_AUTO, FAN_AUTO};
+    struct fan_demand demand = {FAN_LOW, FAN_LOW};
 
-    for (enum fan_level level = FAN_LOW; level <= FAN_FULL; ++level) {
+    for (enum fan_level level = FAN_MEDIUM_LOW; level <= FAN_FULL; ++level) {
         const int threshold = thresholds[level] - shift;
 
         if (temperature >= threshold) {
@@ -28,7 +28,7 @@ static struct fan_demand curve_demand(int temperature, const int *thresholds,
 struct fan_demand cpu_demand(int temperature)
 {
     static const int thresholds[] = {
-        [FAN_LOW] = 45000, [FAN_MEDIUM_LOW] = 50000, [FAN_MEDIUM] = 55000,
+        [FAN_MEDIUM_LOW] = 50000, [FAN_MEDIUM] = 55000,
         [FAN_MEDIUM_HIGH] = 60000, [FAN_HIGH] = 65000, [FAN_FULL] = 70000,
     };
 
@@ -38,7 +38,7 @@ struct fan_demand cpu_demand(int temperature)
 struct fan_demand nvme_demand(int temperature, int warning)
 {
     static const int thresholds[] = {
-        [FAN_LOW] = 45000, [FAN_MEDIUM_LOW] = 50000, [FAN_MEDIUM] = 55000,
+        [FAN_MEDIUM_LOW] = 50000, [FAN_MEDIUM] = 55000,
         [FAN_MEDIUM_HIGH] = 60000, [FAN_HIGH] = 63000, [FAN_FULL] = 65000,
     };
     int shift = 0;

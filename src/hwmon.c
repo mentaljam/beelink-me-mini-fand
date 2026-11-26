@@ -260,9 +260,6 @@ int apply_fan_level(int fan, enum fan_level level)
     if (read_number(fan, "pwm2_enable", &mode) < 0) {
         return -1;
     }
-    if (level == FAN_AUTO) {
-        return mode == 2 ? 0 : write_number(fan, "pwm2_enable", 2);
-    }
     if (mode != 1) {
         // The IT8613E rejects writes to pwm2 while in auto mode.
         if (write_number(fan, "pwm2_enable", 1) < 0) {

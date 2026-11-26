@@ -58,11 +58,7 @@ static int sample(struct controller *controller)
     if (controller->dry_run || controller->first_sample ||
         level != controller->level) {
         FILE *log = controller->dry_run ? stdout : stderr;
-        if (level == FAN_AUTO) {
-            fputs("Fan: automatic\n", log);
-        } else {
-            fprintf(log, "Fan: PWM %d\n", level_pwm(level));
-        }
+        fprintf(log, "Fan: PWM %d\n", level_pwm(level));
         fflush(log);
     }
     controller->first_sample = false;
@@ -137,7 +133,7 @@ int main(int argc, char **argv)
 {
     struct controller controller = {
         .sysfs = -1, .cpu_sensor = -1, .fan = -1,
-        .level = FAN_AUTO, .first_sample = true, .nvme_complete = true,
+        .level = FAN_LOW, .first_sample = true, .nvme_complete = true,
     };
     bool once = false;
     for (int index = 1; index < argc; ++index) {
