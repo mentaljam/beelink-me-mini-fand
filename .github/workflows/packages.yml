@@ -1,0 +1,75 @@
+name: Linux packages
+
+on:
+  pull_request:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Install GCC 14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-14
+
+      - name: Build and stage the stripped executable
+        run: |
+          make CC=gcc-14 CFLAGS='-O3 -march=x86-64-v3 -mtune=alderlake' \
+            DESTDIR="$PWD/build/pkgroot" PREFIX=/usr SBINDIR=/usr/bin \
+            SYSTEMD_UNIT_DIR=/usr/lib/systemd/system install-strip
+
+      - name: Install nFPM
+        run: |
+          archive=nfpm_2.49.0_Linux_x86_64.tar.gz
+          curl --fail --silent --show-error --location \
+            "https://github.com/goreleaser/nfpm/releases/download/v2.49.0/$archive" \
+            --output "$RUNNER_TEMP/$archive"
+          printf '%s  %s\n' 2afaa5ffb5e3493402e31e7c67a5a1fb42133e3f66fc315ca0051934125561c7 \
+            "$RUNNER_TEMP/$archive" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" nfpm
+
+      - name: Build packages
+        run: |
+          export VERSION=0.0.0
+          if [[ "$GITHUB_REF_TYPE" == tag ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          mkdir -p build/packages
+          for format in deb rpm archlinux; do
+            "$RUNNER_TEMP/nfpm" package --packager "$format" --target build/packages/
+          done
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: packages
+          path: build/packages/
+          if-no-files-found: error
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: packages
+          path: packages
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" packages/* \
+            --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes

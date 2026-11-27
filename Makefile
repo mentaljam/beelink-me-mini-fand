@@ -1,6 +1,7 @@
 CC ?= cc
 CFLAGS ?= -O2
 PREFIX ?= /usr/local
+SBINDIR ?= $(PREFIX)/sbin
 SYSTEMD_UNIT_DIR ?= /etc/systemd/system
 
 program = beelink-me-mini-fand
@@ -24,8 +25,8 @@ $(build_dir):
 install-strip: private strip_flag = -s
 
 install install-strip: $(binary)
-	install -Dm755 $(strip_flag) $(binary) "$(DESTDIR)$(PREFIX)/sbin/$(program)"
-	sed 's|@SBINDIR@|$(PREFIX)/sbin|g' systemd/$(program).service.in | \
+	install -Dm755 $(strip_flag) $(binary) "$(DESTDIR)$(SBINDIR)/$(program)"
+	sed 's|@SBINDIR@|$(SBINDIR)|g' systemd/$(program).service.in | \
 		install -Dm644 /dev/stdin "$(DESTDIR)$(SYSTEMD_UNIT_DIR)/$(program).service"
 
 clean:

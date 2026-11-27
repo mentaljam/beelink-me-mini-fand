@@ -58,6 +58,24 @@ with a readable `fan2_input` and writable `pwm2` and `pwm2_enable` attributes.
 Install and load the driver separately. Stop any other service controlling
 the same fan before starting this daemon.
 
+Use either a release package or `make install` on a given system.
+The two installation methods are incompatible.
+
+### Install a release package
+
+Download the package for your distribution from [GitHub Releases](https://github.com/mentaljam/beelink-me-mini-fand/releases).
+Packages require an x86-64-v3 CPU, glibc 2.38 or newer, and systemd.
+
+| Distribution | Install the downloaded package |
+| --- | --- |
+| Debian / Ubuntu | `sudo apt install ./<package>.deb` |
+| Fedora | `sudo dnf install ./<package>.rpm` |
+| Arch Linux / Manjaro | `sudo pacman -U ./<package>.pkg.tar.zst` |
+
+Then run `sudo systemctl enable --now beelink-me-mini-fand.service`.
+
+### Install from source
+
 ```sh
 sudo make install
 sudo systemctl daemon-reload
