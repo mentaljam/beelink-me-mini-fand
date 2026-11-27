@@ -1,6 +1,9 @@
 CC ?= cc
 CFLAGS ?= -O2
+NFPM ?= nfpm
+VERSION ?= 0.0.0
 PREFIX ?= /usr/local
+SBINDIR ?= $(PREFIX)/sbin
 SYSTEMD_UNIT_DIR ?= /etc/systemd/system
 
 program = beelink-me-mini-fand
@@ -8,7 +11,7 @@ build_dir = build
 binary = $(build_dir)/$(program)
 objects = $(addprefix $(build_dir)/,main.o hwmon.o curve.o)
 
-.PHONY: all clean install install-strip
+.PHONY: all clean install install-strip packages
 
 all: $(binary)
 
@@ -24,9 +27,17 @@ $(build_dir):
 install-strip: private strip_flag = -s
 
 install install-strip: $(binary)
-	install -Dm755 $(strip_flag) $(binary) "$(DESTDIR)$(PREFIX)/sbin/$(program)"
-	sed 's|@SBINDIR@|$(PREFIX)/sbin|g' systemd/$(program).service.in | \
+	install -Dm755 $(strip_flag) $(binary) "$(DESTDIR)$(SBINDIR)/$(program)"
+	sed 's|@SBINDIR@|$(SBINDIR)|g' systemd/$(program).service.in | \
 		install -Dm644 /dev/stdin "$(DESTDIR)$(SYSTEMD_UNIT_DIR)/$(program).service"
+
+packages:
+	$(MAKE) install-strip DESTDIR="$(CURDIR)/$(build_dir)/pkgroot" PREFIX=/usr \
+		SBINDIR=/usr/bin SYSTEMD_UNIT_DIR=/usr/lib/systemd/system
+	mkdir -p "$(build_dir)/packages"
+	set -e; for format in deb rpm archlinux; do \
+		VERSION="$(VERSION)" "$(NFPM)" package --packager "$$format" --target "$(build_dir)/packages/"; \
+	done
 
 clean:
 	$(RM) $(binary) $(objects)

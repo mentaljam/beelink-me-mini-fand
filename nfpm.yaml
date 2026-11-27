@@ -1,0 +1,34 @@
+name: beelink-me-mini-fand
+arch: amd64
+version: ${VERSION}
+release: '1'
+section: utils
+maintainer: Petr Tsymbarovich <petr@tsymbarovich.ru>
+description: CPU and NVMe fan control daemon for the Beelink ME mini
+homepage: https://github.com/mentaljam/beelink-me-mini-fand
+license: Unspecified
+contents:
+  - src: build/pkgroot/usr/bin/beelink-me-mini-fand
+    dst: /usr/bin/beelink-me-mini-fand
+  - src: build/pkgroot/usr/lib/systemd/system/beelink-me-mini-fand.service
+    dst: /usr/lib/systemd/system/beelink-me-mini-fand.service
+scripts:
+  postinstall: packaging/postinstall.sh
+  preremove: packaging/preremove.sh
+  postremove: packaging/postremove.sh
+overrides:
+  deb:
+    depends:
+      - libc6 (>= 2.38)
+      - systemd
+  rpm:
+    depends:
+      - glibc >= 2.38
+      - systemd
+  archlinux:
+    depends:
+      - glibc>=2.38
+      - systemd
+archlinux:
+  scripts:
+    postupgrade: packaging/postinstall.sh
