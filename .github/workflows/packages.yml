@@ -13,18 +13,13 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
-      - name: Install GCC 14
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-14
-
       - name: Build and stage the stripped executable
         run: |
-          make CC=gcc-14 CFLAGS='-O3 -march=x86-64-v3 -mtune=alderlake' \
+          make CC=gcc CFLAGS='-O3 -march=x86-64-v3 -mtune=alderlake' \
             DESTDIR="$PWD/build/pkgroot" PREFIX=/usr SBINDIR=/usr/bin \
             SYSTEMD_UNIT_DIR=/usr/lib/systemd/system install-strip
 
@@ -49,7 +44,7 @@ jobs:
             "$RUNNER_TEMP/nfpm" package --packager "$format" --target build/packages/
           done
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: packages
           path: build/packages/
@@ -62,7 +57,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8.0.2
         with:
           name: packages
           path: packages
