@@ -10,13 +10,13 @@ The default CPU fan curve comes from the original
 ## Fan curve
 
 | PWM | CPU package threshold | NVMe composite threshold |
-| --- | ---: | ---: |
-| 110 | Below 50 °C | Below 50 °C |
-| 145 | 50 °C | 50 °C |
-| 180 | 55 °C | 55 °C |
-| 215 | 60 °C | 60 °C |
-| 240 | 65 °C | 63 °C |
-| 255 | 70 °C | 65 °C |
+| --- | --------------------: | -----------------------: |
+| 110 |           Below 50 °C |              Below 50 °C |
+| 145 |                 50 °C |                    50 °C |
+| 180 |                 55 °C |                    55 °C |
+| 215 |                 60 °C |                    60 °C |
+| 240 |                 65 °C |                    63 °C |
+| 255 |                 70 °C |                    65 °C |
 
 The daemon samples temperatures every 5 seconds. It increases PWM as soon as a
 sample reaches a higher threshold and applies 3 °C of hysteresis when reducing
@@ -66,10 +66,10 @@ The two installation methods are incompatible.
 Download the package for your distribution from [GitHub Releases](https://github.com/mentaljam/beelink-me-mini-fand/releases).
 Packages require an x86-64-v3 CPU, glibc 2.38 or newer, and systemd.
 
-| Distribution | Install the downloaded package |
-| --- | --- |
-| Debian / Ubuntu | `sudo apt install ./<package>.deb` |
-| Fedora | `sudo dnf install ./<package>.rpm` |
+| Distribution         | Install the downloaded package           |
+| -------------------- | ---------------------------------------- |
+| Debian / Ubuntu      | `sudo apt install ./<package>.deb`       |
+| Fedora               | `sudo dnf install ./<package>.rpm`       |
 | Arch Linux / Manjaro | `sudo pacman -U ./<package>.pkg.tar.zst` |
 
 Then run `sudo systemctl enable --now beelink-me-mini-fand.service`.

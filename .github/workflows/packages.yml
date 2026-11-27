@@ -1,7 +1,6 @@
 name: Linux packages
 
 on:
-  pull_request:
   push:
     tags:
       - 'v*'
@@ -17,12 +16,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Build and stage the stripped executable
-        run: |
-          make CC=gcc CFLAGS='-O3 -march=x86-64-v3 -mtune=alderlake' \
-            DESTDIR="$PWD/build/pkgroot" PREFIX=/usr SBINDIR=/usr/bin \
-            SYSTEMD_UNIT_DIR=/usr/lib/systemd/system install-strip
-
       - name: Install nFPM
         run: |
           archive=nfpm_2.49.0_Linux_x86_64.tar.gz
@@ -34,15 +27,11 @@ jobs:
           tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" nfpm
 
       - name: Build packages
-        run: |
-          export VERSION=0.0.0
-          if [[ "$GITHUB_REF_TYPE" == tag ]]; then
-            VERSION="${GITHUB_REF_NAME#v}"
-          fi
-          mkdir -p build/packages
-          for format in deb rpm archlinux; do
-            "$RUNNER_TEMP/nfpm" package --packager "$format" --target build/packages/
-          done
+        env:
+          CC: gcc
+          CFLAGS: -O3 -march=x86-64-v3 -mtune=alderlake
+          NFPM: ${{ runner.temp }}/nfpm
+        run: make packages VERSION="${GITHUB_REF_NAME#v}"
 
       - uses: actions/upload-artifact@v7.0.2
         with:
@@ -51,7 +40,6 @@ jobs:
           if-no-files-found: error
 
   release:
-    if: github.ref_type == 'tag'
     needs: build
     runs-on: ubuntu-24.04
     permissions:
